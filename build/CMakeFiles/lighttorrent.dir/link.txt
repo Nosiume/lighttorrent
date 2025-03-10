@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/lighttorrent.dir/src/main.cpp.o -o lighttorrent  -lcurses
+/sbin/c++ -Wl,--dependency-file=CMakeFiles/lighttorrent.dir/link.d CMakeFiles/lighttorrent.dir/src/Bencoding.cpp.o CMakeFiles/lighttorrent.dir/src/HTTP.cpp.o CMakeFiles/lighttorrent.dir/src/Torrent.cpp.o CMakeFiles/lighttorrent.dir/src/main.cpp.o -o lighttorrent  -lcurses

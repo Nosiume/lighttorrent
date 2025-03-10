@@ -1,0 +1,8 @@
+bdict => 'd' bdict_aux
+bdict_aux => bstring (bdict | blist | bint | bstring) bdict_aux | 'e'
+blist => 'l' blist_aux
+blist_aux => (bdict | blist | bint | bstring) blist_aux | 'e'
+bint => 'i' [1-9] bint_aux
+bint_aux => [0-9] | 'e'
+bstring => [1-9] bstring_len_aux
+bstring => [0-9] | ':' <string-of-associated-length>

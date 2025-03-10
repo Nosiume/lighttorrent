@@ -15,10 +15,10 @@
 ########################
 
 //Path to a program.
-CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
+CMAKE_ADDR2LINE:FILEPATH=/sbin/addr2line
 
 //Path to a program.
-CMAKE_AR:FILEPATH=/usr/bin/ar
+CMAKE_AR:FILEPATH=/sbin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
@@ -28,15 +28,15 @@ CMAKE_BUILD_TYPE:STRING=
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
 //CXX compiler
-CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
+CMAKE_CXX_COMPILER:FILEPATH=/sbin/c++
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/bin/gcc-ar-14
+CMAKE_CXX_COMPILER_AR:FILEPATH=/sbin/gcc-ar
 
 //A wrapper around 'ranlib' adding the appropriate '--plugin' option
 // for the GCC compiler
-CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/usr/bin/gcc-ranlib-14
+CMAKE_CXX_COMPILER_RANLIB:FILEPATH=/sbin/gcc-ranlib
 
 //Flags used by the CXX compiler during all build types.
 CMAKE_CXX_FLAGS:STRING=
@@ -81,10 +81,10 @@ CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=/home/n0s/Documents/code/lighttorrent/bu
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=/usr/bin/ld
+CMAKE_LINKER:FILEPATH=/sbin/ld
 
 //Path to a program.
-CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/gmake
+CMAKE_MAKE_PROGRAM:FILEPATH=/sbin/make
 
 //Flags used by the linker during the creation of modules during
 // all build types.
@@ -107,13 +107,13 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_NM:FILEPATH=/usr/bin/nm
+CMAKE_NM:FILEPATH=/sbin/nm
 
 //Path to a program.
-CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
+CMAKE_OBJCOPY:FILEPATH=/sbin/objcopy
 
 //Path to a program.
-CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
+CMAKE_OBJDUMP:FILEPATH=/sbin/objdump
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=A lightweight bittorrent client in c++
@@ -140,10 +140,10 @@ CMAKE_PROJECT_VERSION_PATCH:STATIC=
 CMAKE_PROJECT_VERSION_TWEAK:STATIC=
 
 //Path to a program.
-CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
+CMAKE_RANLIB:FILEPATH=/sbin/ranlib
 
 //Path to a program.
-CMAKE_READELF:FILEPATH=/usr/bin/readelf
+CMAKE_READELF:FILEPATH=/sbin/readelf
 
 //Flags used by the linker during the creation of shared libraries
 // during all build types.
@@ -193,7 +193,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_STRIP:FILEPATH=/usr/bin/strip
+CMAKE_STRIP:FILEPATH=/sbin/strip
 
 //Path to a program.
 CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
@@ -205,22 +205,22 @@ CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Path to a library.
-CURSES_CURSES_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libcurses.so
+CURSES_CURSES_LIBRARY:FILEPATH=/usr/lib/libcurses.so
 
 //Path to a library.
-CURSES_FORM_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libform.so
+CURSES_FORM_LIBRARY:FILEPATH=/usr/lib/libform.so
 
 //Path to a file.
 CURSES_INCLUDE_PATH:PATH=/usr/include
 
 //Path to a library.
-CURSES_NCURSES_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libncurses.so
+CURSES_NCURSES_LIBRARY:FILEPATH=/usr/lib/libncurses.so
 
 //Arguments to supply to pkg-config
 PKG_CONFIG_ARGN:STRING=
 
 //pkg-config executable
-PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+PKG_CONFIG_EXECUTABLE:FILEPATH=/sbin/pkg-config
 
 //Value Computed by CMake
 lighttorrent_BINARY_DIR:STATIC=/home/n0s/Documents/code/lighttorrent/build
@@ -232,10 +232,7 @@ lighttorrent_IS_TOP_LEVEL:STATIC=ON
 lighttorrent_SOURCE_DIR:STATIC=/home/n0s/Documents/code/lighttorrent
 
 //Path to a library.
-pkgcfg_lib_NCURSES_ncurses:FILEPATH=/usr/lib/x86_64-linux-gnu/libncurses.so
-
-//Path to a library.
-pkgcfg_lib_NCURSES_tinfo:FILEPATH=/usr/lib/x86_64-linux-gnu/libtinfo.so
+pkgcfg_lib_NCURSES_ncursesw:FILEPATH=/usr/lib/libncursesw.so
 
 
 ########################
@@ -251,9 +248,9 @@ CMAKE_CACHEFILE_DIR:INTERNAL=/home/n0s/Documents/code/lighttorrent/build
 //Major version of cmake used to create the current loaded cache
 CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 //Minor version of cmake used to create the current loaded cache
-CMAKE_CACHE_MINOR_VERSION:INTERNAL=30
+CMAKE_CACHE_MINOR_VERSION:INTERNAL=31
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=5
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=6
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -280,6 +277,8 @@ CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_DLLTOOL
 CMAKE_DLLTOOL-ADVANCED:INTERNAL=1
+//Path to cache edit program executable.
+CMAKE_EDIT_COMMAND:INTERNAL=/usr/bin/ccmake
 //Executable file format
 CMAKE_EXECUTABLE_FORMAT:INTERNAL=ELF
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS
@@ -308,7 +307,7 @@ CMAKE_GENERATOR_TOOLSET:INTERNAL=
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=/home/n0s/Documents/code/lighttorrent
 //Install .so files without execute permission.
-CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
+CMAKE_INSTALL_SO_NO_EXE:INTERNAL=0
 //ADVANCED property for variable: CMAKE_LINKER
 CMAKE_LINKER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MAKE_PROGRAM
@@ -338,7 +337,7 @@ CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_READELF
 CMAKE_READELF-ADVANCED:INTERNAL=1
 //Path to CMake installation.
-CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.30
+CMAKE_ROOT:INTERNAL=/usr/share/cmake
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
 CMAKE_SHARED_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS_DEBUG
@@ -368,7 +367,7 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_TAPI
 CMAKE_TAPI-ADVANCED:INTERNAL=1
 //uname command
-CMAKE_UNAME:INTERNAL=/usr/bin/uname
+CMAKE_UNAME:INTERNAL=/sbin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CURSES_CURSES_LIBRARY
@@ -380,18 +379,18 @@ CURSES_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CURSES_NCURSES_LIBRARY
 CURSES_NCURSES_LIBRARY-ADVANCED:INTERNAL=1
 //Details about finding Curses
-FIND_PACKAGE_MESSAGE_DETAILS_Curses:INTERNAL=[/usr/lib/x86_64-linux-gnu/libcurses.so][/usr/include][v()]
+FIND_PACKAGE_MESSAGE_DETAILS_Curses:INTERNAL=[/usr/lib/libcurses.so][/usr/include][v()]
 NCURSES_CFLAGS:INTERNAL=-D_DEFAULT_SOURCE;-D_XOPEN_SOURCE=600
 NCURSES_CFLAGS_I:INTERNAL=
 NCURSES_CFLAGS_OTHER:INTERNAL=-D_DEFAULT_SOURCE;-D_XOPEN_SOURCE=600
 NCURSES_FOUND:INTERNAL=1
 NCURSES_INCLUDEDIR:INTERNAL=/usr/include
 NCURSES_INCLUDE_DIRS:INTERNAL=
-NCURSES_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lncurses;-ltinfo
+NCURSES_LDFLAGS:INTERNAL=-lncursesw
 NCURSES_LDFLAGS_OTHER:INTERNAL=
-NCURSES_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
-NCURSES_LIBRARIES:INTERNAL=ncurses;tinfo
-NCURSES_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
+NCURSES_LIBDIR:INTERNAL=/usr/lib
+NCURSES_LIBRARIES:INTERNAL=ncursesw
+NCURSES_LIBRARY_DIRS:INTERNAL=
 NCURSES_LIBS:INTERNAL=
 NCURSES_LIBS_L:INTERNAL=
 NCURSES_LIBS_OTHER:INTERNAL=
@@ -402,11 +401,11 @@ NCURSES_STATIC_CFLAGS:INTERNAL=-D_DEFAULT_SOURCE;-D_XOPEN_SOURCE=600
 NCURSES_STATIC_CFLAGS_I:INTERNAL=
 NCURSES_STATIC_CFLAGS_OTHER:INTERNAL=-D_DEFAULT_SOURCE;-D_XOPEN_SOURCE=600
 NCURSES_STATIC_INCLUDE_DIRS:INTERNAL=
-NCURSES_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lncurses;-ltinfo;-ldl
+NCURSES_STATIC_LDFLAGS:INTERNAL=-lncursesw
 NCURSES_STATIC_LDFLAGS_OTHER:INTERNAL=
 NCURSES_STATIC_LIBDIR:INTERNAL=
-NCURSES_STATIC_LIBRARIES:INTERNAL=ncurses;tinfo;dl
-NCURSES_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
+NCURSES_STATIC_LIBRARIES:INTERNAL=ncursesw
+NCURSES_STATIC_LIBRARY_DIRS:INTERNAL=
 NCURSES_STATIC_LIBS:INTERNAL=
 NCURSES_STATIC_LIBS_L:INTERNAL=
 NCURSES_STATIC_LIBS_OTHER:INTERNAL=
@@ -421,12 +420,12 @@ PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 //linker supports push/pop state
+_CMAKE_CXX_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
+//linker supports push/pop state
 _CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
 __pkg_config_arguments_NCURSES:INTERNAL=QUIET;ncurses
 __pkg_config_checked_NCURSES:INTERNAL=1
-//ADVANCED property for variable: pkgcfg_lib_NCURSES_ncurses
-pkgcfg_lib_NCURSES_ncurses-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: pkgcfg_lib_NCURSES_tinfo
-pkgcfg_lib_NCURSES_tinfo-ADVANCED:INTERNAL=1
-prefix_result:INTERNAL=/usr/lib/x86_64-linux-gnu
+//ADVANCED property for variable: pkgcfg_lib_NCURSES_ncursesw
+pkgcfg_lib_NCURSES_ncursesw-ADVANCED:INTERNAL=1
+prefix_result:INTERNAL=/usr/lib
 
