@@ -11,6 +11,13 @@ namespace http {
 
 	// Opens a file descriptor to a socket for our http connection
 	bool session(const std::string& server, int* sessionId);
+	void close_session(int sessionId);
+
+	std::string make_get_url(const std::map<std::string, std::string>& params,
+			const std::string& url);
+	std::map<std::string, std::string> parse_params(const std::string& pString);
+
+	std::string url_encode(const std::string& data);
 
 	using HTTPHeaders = std::map<std::string, std::string>;
 	using HTTPMethod = std::string;
@@ -36,10 +43,12 @@ namespace http {
 			int m_status;
 
 		public:
-			HTTPResponse(int, const HTTPHeaders&, const std::string&, const std::string& document);
+			HTTPResponse(int, const HTTPHeaders&, const std::string&);
 
 			int status() const;
 			std::string toString() override;
+
+		static HTTPResponse fromRawResponse(std::string& res);
 	};
 
 	class HTTPRequest : public HTTPBase {
@@ -48,7 +57,7 @@ namespace http {
 
 		public:
 			HTTPRequest(const HTTPMethod&, const HTTPHeaders&, 
-					const std::string&, const std::string&); 
+					const std::string&); 
 
 			HTTPResponse send_request(int sessionId);
 

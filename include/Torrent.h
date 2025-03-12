@@ -11,7 +11,7 @@ struct TorrentOutFile {
 };
 
 class Torrent {
-	private:
+	public: // PUT THIS BACK TO PRIVATE TODO
 		//Optional fields
 		std::optional<std::string> m_createdBy;
 		std::optional<long long> m_creationDate;
@@ -20,11 +20,13 @@ class Torrent {
 
 		std::string m_tracker;
 		std::vector<TorrentOutFile> m_files;
-		std::string m_rootPath;
 		long long m_pieceLength;
 		std::string m_pieces;
 
+
 	public:
 		Torrent(const std::string& path);
-		~Torrent();
+		~Torrent() {};
+
+		std::string toString() const;
 };

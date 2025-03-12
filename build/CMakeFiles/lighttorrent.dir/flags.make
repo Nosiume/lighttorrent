@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/n0s/Documents/code/lighttorrent/include
 
-CXX_FLAGS = 
+CXX_FLAGS = -std=gnu++20
 

@@ -1,10 +1,12 @@
 #include "HTTP.h"
+#include <cctype>
 #include <cstring>
-#include <iostream>
 #include <netinet/in.h>
 #include <sstream>
+#include <string>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <format>
 
 namespace http {
 	
@@ -34,9 +36,8 @@ namespace http {
 	// HTTPRequest
 	
 	HTTPRequest::HTTPRequest(const HTTPMethod& method, 
-			const HTTPHeaders& headers, const std::string& data,
-			const std::string& document) 
-		:m_method(method), HTTPBase(headers, data, document) 
+			const HTTPHeaders& headers, const std::string& document) 
+		:m_method(method), HTTPBase(headers, "", document) 
 	{}
 
 	HTTPResponse HTTPRequest::send_request(int sessionId) {
@@ -49,10 +50,10 @@ namespace http {
 		while((len = recv(sessionId, buf, 512, 0)) > 0) {
 			sstream << buf;
 		}
-		std::string response = sstream.str();
-		std::cout << response << std::endl;
 
-		return HTTPResponse(200, {}, "", "");
+		// This holds the entire data
+		std::string response = sstream.str();
+		return HTTPResponse::fromRawResponse(response);
 	}
 
 	std::string HTTPRequest::toString() {
@@ -75,12 +76,18 @@ namespace http {
 	// HTTPResponse
 
 	HTTPResponse::HTTPResponse(int status, const HTTPHeaders& headers, 
-			const std::string& data, const std::string& document)
-		:m_status(status), HTTPBase(headers, data, document)
+			const std::string& data)
+		:m_status(status), HTTPBase(headers, data, "")
 	{}
 
 	std::string HTTPResponse::toString() {
-		return "";
+		std::stringstream sstream;
+		sstream << std::format("HTTP/1.1 {}\r\n", m_status);
+		for(const auto& header: m_headers) {
+			sstream << std::format("{}: {}\r\n", header.first, header.second);
+		}
+		sstream << "\r\n" << m_data << "\r\n\r\n";
+		return sstream.str();
 	}
 
 	int HTTPResponse::status() const {
@@ -90,6 +97,10 @@ namespace http {
 	// Open connection to a http server
 	
 	bool session(const std::string &server, int* sessionId) {
+		size_t sep = server.find(':');
+		std::string ip = server.substr(0, sep);
+		int port = std::stoi(server.substr(sep + 1));
+
 		int socketId = socket(AF_INET, SOCK_STREAM, 0);
 		if(socketId < 0) { return false; }
 
@@ -98,14 +109,14 @@ namespace http {
 		hints.ai_family = AF_INET;
 		hints.ai_socktype = SOCK_STREAM;
 
-		if(getaddrinfo(server.c_str(), NULL, &hints, &res) != 0) {
+		if(getaddrinfo(ip.c_str(), NULL, &hints, &res) != 0) {
 			perror("failed to resolve host name");
 			close(socketId);
 			return false;
 		}
 
 		struct sockaddr_in* server_addr = (struct sockaddr_in*) res->ai_addr;
-		server_addr->sin_port = htons(80);
+		server_addr->sin_port = htons(port);
 
 		if(connect(socketId, 
 					(struct sockaddr*)server_addr,
@@ -120,5 +131,73 @@ namespace http {
 		*sessionId = socketId;	
 		freeaddrinfo(res);
 		return true;
+	}
+
+	void close_session(int sessionId) {
+		close(sessionId); // complex function lol
+	}
+
+	std::string make_get_url(const std::map<std::string, std::string> &params, 
+			const std::string &url) {
+		std::stringstream ss;
+		ss << url;
+		ss << '?';
+
+		bool hasPrev = false;
+		for(const auto& entry : params) {
+			if(hasPrev) ss << '&';
+			ss << entry.first << '=' << url_encode(entry.second);
+			if(!hasPrev) hasPrev = true;
+		}
+		return ss.str();
+	}
+
+	std::map<std::string, std::string> parse_params(const std::string& pString) {
+		size_t start = pString.find('?');
+		std::string params = pString.substr(start + 1);
+
+		std::map<std::string, std::string> res;
+		std::stringstream ss(params);
+		std::string line;
+		while(getline(ss, line, '&')) {
+			size_t sep = line.find('=');
+			std::string key = line.substr(0, sep);
+			std::string value = line.substr(sep + 1);
+			res.emplace(key, value);
+		}
+		return res;
+	}
+
+	std::string url_encode(const std::string& data) {
+		std::stringstream ss;
+		for(char c : data) {
+			if(std::isalnum(c) || c == '_' || c == '-' || c == '.' | c == '~') ss << c;
+			else ss << std::uppercase << std::format("%{:02x}", (unsigned char) c);
+		}
+		return ss.str();
+	}
+
+	// Util
+	HTTPResponse HTTPResponse::fromRawResponse(std::string &res) {
+		size_t start = res.find(' ') + 1;
+		size_t end = res.find(' ', start);
+		int response = std::stoi(res.substr(start, end - start));
+		HTTPHeaders headers;
+
+		std::stringstream sstream(res);
+		std::string line;
+		while(std::getline(sstream, line)) {
+			if(line[0] == '\r') break;  // No need to check newline since it's deleted
+
+			size_t delimPos = line.find(':');
+			if(delimPos == std::string::npos) continue;
+
+			std::string key = line.substr(0, delimPos);
+			std::string value = line.substr(delimPos + 1);
+			headers.emplace(key, value);
+		}
+
+		std::string body = sstream.str().substr(sstream.tellg());
+		return HTTPResponse(response, headers, body);
 	}
 }
