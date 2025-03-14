@@ -5,13 +5,13 @@
 #include <vector>
 
 struct TorrentOutFile {
-	std::string checksum;
+	std::optional<std::string> checksum;
 	std::string path;
 	long long length;
 };
 
 class Torrent {
-	public: // PUT THIS BACK TO PRIVATE TODO
+	private: // PUT THIS BACK TO PRIVATE TODO
 		//Optional fields
 		std::optional<std::string> m_createdBy;
 		std::optional<long long> m_creationDate;
@@ -27,6 +27,8 @@ class Torrent {
 	public:
 		Torrent(const std::string& path);
 		~Torrent() {};
+
+		bool download(const std::string& root, std::string* status);
 
 		std::string toString() const;
 };

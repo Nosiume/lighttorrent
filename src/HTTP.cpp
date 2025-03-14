@@ -40,15 +40,31 @@ namespace http {
 		:m_method(method), HTTPBase(headers, "", document) 
 	{}
 
-	HTTPResponse HTTPRequest::send_request(int sessionId) {
+	HTTPResponse HTTPRequest::send_request(const HTTPSession& session) {
 		std::string request = toString();
-		send(sessionId, request.c_str(), request.length(), 0);		
+
+		if(session.prot == TCP) {
+			send(session.fd, request.c_str(), request.length(), 0);		
+		} else {
+			sendto(session.fd, 
+					request.c_str(), 
+					request.length(), 0, 
+					(struct sockaddr*)&session.sock, sizeof(struct sockaddr_in));
+		}
 
 		std::stringstream sstream;
 		char buf[512];
 		size_t len;
-		while((len = recv(sessionId, buf, 512, 0)) > 0) {
-			sstream << buf;
+
+		if(session.prot == TCP) {
+			while((len = recv(session.fd, buf, 512, 0)) > 0) {
+				sstream << buf;
+			}
+		} else {
+			while((len = recvfrom(session.fd, buf, 512, 0,
+							(struct sockaddr*)&session.sock, 0))) {
+				sstream << buf;
+			}
 		}
 
 		// This holds the entire data
@@ -96,18 +112,24 @@ namespace http {
 
 	// Open connection to a http server
 	
-	bool session(const std::string &server, int* sessionId) {
-		size_t sep = server.find(':');
-		std::string ip = server.substr(0, sep);
-		int port = std::stoi(server.substr(sep + 1));
+	bool session(const std::string &server, HTTPSession* session) {
+		Protocol prot = server.starts_with("udp") ? UDP : TCP;
+		session->prot = prot;
+		
+		std::string ipport = server.substr(5);
+		size_t sep = ipport.find(':');
+		size_t port_end = ipport.find("/");
 
-		int socketId = socket(AF_INET, SOCK_STREAM, 0);
+		std::string ip = ipport.substr(0, sep);
+		int port = std::stoi(ipport.substr(sep + 1, port_end - sep - 1));
+
+		int socketId = socket(AF_INET, prot, 0);
 		if(socketId < 0) { return false; }
 
 		struct addrinfo hints, *res;
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_family = AF_INET;
-		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_socktype = prot;
 
 		if(getaddrinfo(ip.c_str(), NULL, &hints, &res) != 0) {
 			perror("failed to resolve host name");
@@ -117,10 +139,20 @@ namespace http {
 
 		struct sockaddr_in* server_addr = (struct sockaddr_in*) res->ai_addr;
 		server_addr->sin_port = htons(port);
+		memcpy(server_addr, &session->sock, res->ai_addrlen);
 
-		if(connect(socketId, 
-					(struct sockaddr*)server_addr,
-					res->ai_addrlen) != 0) {
+		int code;
+		if(prot == UDP) {
+			code = bind(socketId,
+					(struct sockaddr*) server_addr,
+					res->ai_addrlen);
+		} else {
+			code = connect(socketId,
+					(struct sockaddr*) server_addr,
+					res->ai_addrlen);
+		}
+
+		if(code < 0) {
 			perror("failed to connect");
 			close(socketId);
 			freeaddrinfo(res);
@@ -128,13 +160,13 @@ namespace http {
 		}
 
 
-		*sessionId = socketId;	
+		session->fd = socketId;	
 		freeaddrinfo(res);
 		return true;
 	}
 
-	void close_session(int sessionId) {
-		close(sessionId); // complex function lol
+	void close_session(const HTTPSession& session) {
+		close(session.fd);
 	}
 
 	std::string make_get_url(const std::map<std::string, std::string> &params, 

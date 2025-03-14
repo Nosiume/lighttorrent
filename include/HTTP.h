@@ -9,9 +9,20 @@
 
 namespace http {
 
+	enum Protocol {
+		UDP = SOCK_DGRAM,
+		TCP = SOCK_STREAM
+	};
+
+	struct HTTPSession {
+		Protocol prot;
+		int fd;
+		struct sockaddr_in sock;
+	};
+
 	// Opens a file descriptor to a socket for our http connection
-	bool session(const std::string& server, int* sessionId);
-	void close_session(int sessionId);
+	bool session(const std::string& server, HTTPSession* sessionId);
+	void close_session(const HTTPSession& session);
 
 	std::string make_get_url(const std::map<std::string, std::string>& params,
 			const std::string& url);
@@ -59,7 +70,7 @@ namespace http {
 			HTTPRequest(const HTTPMethod&, const HTTPHeaders&, 
 					const std::string&); 
 
-			HTTPResponse send_request(int sessionId);
+			HTTPResponse send_request(const HTTPSession& session);
 
 			std::string toString() override;
 			HTTPMethod method() const;

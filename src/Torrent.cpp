@@ -1,11 +1,13 @@
 #include "Torrent.h"
 #include "Bencoding.h"
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
 using namespace bparser;
 
+// Parsing of the torrent info into this class and TorrentOutFile struct
 Torrent::Torrent(const std::string& path) {
 	std::ifstream in(path);
 	if(!in.good()) throw std::invalid_argument("Couldn't open torrent file.");
@@ -29,9 +31,31 @@ Torrent::Torrent(const std::string& path) {
 		}
 	}
 
-	//TODO: read into file objects	
-	
 	BDict info = root.at("info").asDict();
+	if(info.contains("files")) {
+		// Multiple files mode
+		for(const BObject& file : info.at("files").asList()) {
+			BDict fileDict = file.asDict();
+
+			TorrentOutFile f = {
+				.checksum = fileDict.contains("md5sum") ? 
+					std::make_optional(fileDict.at("md5sum").asString()) : std::nullopt,
+				.path = fileDict.at("name").asString(),
+				.length = fileDict.at("length").asInteger()
+			};	
+			m_files.push_back(f);
+		}
+	} else {
+		// Single file mode
+		TorrentOutFile file = {
+			.checksum = info.contains("md5sum") ? 
+				std::make_optional(info.at("md5sum").asString()) : std::nullopt,
+			.path = info.at("name").asString(),
+			.length = info.at("length").asInteger()
+		};	
+		m_files.push_back(file);
+	}
+	
 	m_pieceLength = info.at("piece length").asInteger();
 	m_pieces = info.at("pieces").asString();
 }
@@ -52,6 +76,22 @@ std::string Torrent::toString() const {
 	}
 
 	sstream << "piece length: " << m_pieceLength << '\n';
-	sstream << "pieces: " << m_pieces << '\n';
+	sstream << "pieces: \n";
+	for(int i = 0 ; i < m_pieces.length() ; i+=20) {
+		std::string piece = m_pieces.substr(i, 20);
+
+		sstream << " - ";
+		for(unsigned char c : piece) {
+			sstream << std::setw(2) << std::setfill('0') << std::hex << (int) c;	
+		}
+		sstream << std::setw(0) << std::setfill(' ') << std::dec << "\n";
+	}
+
+	sstream << "files: \n";
+	for(const TorrentOutFile& file : m_files) {
+		sstream << " - " << file.path << " (" << file.length << " bytes)\n";	
+		if(file.checksum.has_value()) 
+			sstream << "\t" << file.checksum.value() << "\n";
+	}
 	return sstream.str();
 }

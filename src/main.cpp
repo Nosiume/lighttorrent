@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include "HTTP.h"
 #include "Torrent.h"
 
 
@@ -14,36 +13,5 @@ int main() {
 	Torrent torrent("../tests/journal.torrent");
 	std::cout << torrent.toString() << std::endl;
 
-	std::string hash = torrent.m_pieces.substr(0, 20);	
-	
-	std::map<std::string, std::string> params = {
-		{"info_hash", hash},
-		{"peer_id", peerId},
-		{"port", "6881"},
-		{"uploaded", "0"},
-		{"downloaded", "0"},
-		{"left", std::to_string(torrent.m_pieces.length() / 20 * torrent.m_pieceLength)},
-		{"compact", "0"},
-		{"event", "started"}
-	};
-	std::string url = http::make_get_url(params, "/announce");
-
-	int sessionId;
-	if(!http::session("p4p.arenabg.com:1337", &sessionId)) {
-		std::cerr << "failed to connect oof" << std::endl;
-		return -1;
-	}
-
-	http::HTTPHeaders headers = {
-		{"Host", "p4p.arenabg.com"},
-		{"Accept", "*/*"},
-		{"User-Agent", "lighttorrent"}
-	};
-	http::HTTPRequest req("GET", headers, url);
-	http::HTTPResponse res = req.send_request(sessionId);
-
-	std::cout << req.toString() << std::endl;
-	std::cout << "=======================" << std::endl;
-	std::cout << res.toString() << std::endl;	
     return 0;
 }
