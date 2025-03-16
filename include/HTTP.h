@@ -18,6 +18,7 @@ namespace http {
 		Protocol prot;
 		int fd;
 		struct sockaddr_in sock;
+		std::string host;
 	};
 
 	// Opens a file descriptor to a socket for our http connection

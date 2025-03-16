@@ -11,7 +11,7 @@ struct TorrentOutFile {
 };
 
 class Torrent {
-	private: // PUT THIS BACK TO PRIVATE TODO
+	public: // PUT THIS BACK TO PRIVATE TODO
 		//Optional fields
 		std::optional<std::string> m_createdBy;
 		std::optional<long long> m_creationDate;

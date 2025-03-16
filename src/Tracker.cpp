@@ -1,13 +1,27 @@
 #include "Tracker.h"
 #include "Bencoding.h"
 #include "HTTP.h"
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
 #include <string>
+#include <unistd.h>
+
+using namespace bparser;
 
 Tracker::Tracker(const std::string& url) {
 	if(!http::session(url, &m_session)) {
 		throw std::runtime_error("failed to connect to tracker.");
 	}
-	//TODO: initialize peerid
+
+	std::stringstream sstream;
+	sstream << "-LT0001-";
+	srand(time(0));
+	for(int i = 0 ; i < 6 ; i++) {
+		unsigned char byte = rand() % 256;
+		sstream << std::setw(2) << std::setfill('0') << std::hex << (int)byte;
+	}
+	m_peerId = sstream.str();
 }
 
 Tracker::~Tracker() {
@@ -46,11 +60,44 @@ TrackerResponse Tracker::query(const TrackerRequest& req) {
 	std::string reqUrl = http::make_get_url(params, "/announce");
 	http::HTTPHeaders headers = {
 		{"User-Agent", "lighttorrent"},
-		{"Accept", "*/*"}
+		{"Accept", "*/*"},
+		{"Host", m_session.host}
 	};
 
 	http::HTTPRequest httpRequest("GET", headers, reqUrl);
 	http::HTTPResponse res = httpRequest.send_request(m_session);
 
 	// Here we need to do bparser on the response data 
+	std::string data = res.data();
+	BDict root = parse(data).asDict();
+
+	TrackerResponse trackRes;
+	if(root.contains("failure reason")) {
+		trackRes.failure_reason = root.at("failure reason").asString();
+		return trackRes;
+	}
+
+	if(root.contains("tracker id"))
+		trackRes.tracker_id = root.at("tracker id").asString();
+	trackRes.interval = root.at("interval").asInteger();
+	trackRes.min_interval = root.at("min interval").asInteger();
+	trackRes.seeders = root.at("complete").asInteger();
+	trackRes.leechers = root.at("incomplete").asInteger();
+	
+	BObject peers = root.at("peers");
+	if(peers.isList()) {
+		for(const BObject& peer : peers.asList()) {
+			BDict peerInfo = peer.asDict();
+			Peer p {
+				.id = peerInfo.at("peer id").asString(),
+				.ip = peerInfo.at("ip").asString(),
+				.port = (short) peerInfo.at("port").asInteger()
+			};
+			trackRes.peers.push_back(p);
+		}
+	} else {
+		//TODO: implement binary wise peer parsing
+	}
+
+	return trackRes;
 }

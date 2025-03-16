@@ -1,6 +1,7 @@
 #include "HTTP.h"
 #include <cctype>
 #include <cstring>
+#include <iostream>
 #include <netinet/in.h>
 #include <sstream>
 #include <string>
@@ -58,11 +59,14 @@ namespace http {
 
 		if(session.prot == TCP) {
 			while((len = recv(session.fd, buf, 512, 0)) > 0) {
+				buf[len] = '\0';
 				sstream << buf;
 			}
 		} else {
+			socklen_t server_addr_len = sizeof(struct sockaddr_in);
 			while((len = recvfrom(session.fd, buf, 512, 0,
-							(struct sockaddr*)&session.sock, 0))) {
+							(struct sockaddr*)&session.sock, &server_addr_len))) {
+				buf[len] = '\0';
 				sstream << buf;
 			}
 		}
@@ -116,13 +120,14 @@ namespace http {
 		Protocol prot = server.starts_with("udp") ? UDP : TCP;
 		session->prot = prot;
 		
-		std::string ipport = server.substr(5);
+		std::string ipport = server.substr(6);
 		size_t sep = ipport.find(':');
 		size_t port_end = ipport.find("/");
 
 		std::string ip = ipport.substr(0, sep);
+		session->host = ip;
 		int port = std::stoi(ipport.substr(sep + 1, port_end - sep - 1));
-
+		
 		int socketId = socket(AF_INET, prot, 0);
 		if(socketId < 0) { return false; }
 
@@ -139,17 +144,19 @@ namespace http {
 
 		struct sockaddr_in* server_addr = (struct sockaddr_in*) res->ai_addr;
 		server_addr->sin_port = htons(port);
-		memcpy(server_addr, &session->sock, res->ai_addrlen);
 
 		int code;
-		if(prot == UDP) {
-			code = bind(socketId,
-					(struct sockaddr*) server_addr,
-					res->ai_addrlen);
-		} else {
+		if(prot == TCP) {
 			code = connect(socketId,
-					(struct sockaddr*) server_addr,
+					(struct sockaddr*)server_addr,
 					res->ai_addrlen);
+		}  else {
+			struct sockaddr_in local;
+			memset(&local, 0, sizeof(struct sockaddr_in));
+			local.sin_port = htons(6881);
+			local.sin_addr.s_addr = INADDR_ANY;
+			local.sin_family = AF_INET;
+			code = bind(socketId, (struct sockaddr*) &local, sizeof(struct sockaddr_in));
 		}
 
 		if(code < 0) {
@@ -159,7 +166,7 @@ namespace http {
 			return false;
 		}
 
-
+		memcpy(server_addr, &session->sock, res->ai_addrlen);
 		session->fd = socketId;	
 		freeaddrinfo(res);
 		return true;
