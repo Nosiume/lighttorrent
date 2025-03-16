@@ -29,8 +29,8 @@ std::string sha1::pad_message(const std::string& message) {
 
 	// big endian size from l's memory
 	for (int i = 7; i >= 0; --i) {
-        ss << (char)((l >> (i * 8)) & 0xFF);
-    }
+		ss << (char)((l >> (i * 8)) & 0xFF);
+	}
 	return ss.str();
 }
 
@@ -47,12 +47,12 @@ std::vector<std::string> sha1::get_blocks(const std::string &padded) {
 
 std::array<uint32_t, 16> sha1::divide_block(const std::string &block) {
 	std::array<uint32_t, 16> res;
-    const uint8_t* ptr = reinterpret_cast<const uint8_t*>(block.c_str());
+	const uint8_t* ptr = reinterpret_cast<const uint8_t*>(block.c_str());
 
-    for (int i = 0; i < 16; i++) {
-        res[i] = (ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | ptr[3];
-        ptr += 4;
-    }
+	for (int i = 0; i < 16; i++) {
+		res[i] = (ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | ptr[3];
+		ptr += 4;
+	}
 	return res;
 }
 
