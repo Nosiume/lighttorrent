@@ -1,7 +1,5 @@
 #include "SHA1.h"
 #include <algorithm>
-#include <iomanip>
-#include <iostream>
 #include <netinet/in.h>
 #include <sstream>
 #include <stdlib.h>
@@ -15,9 +13,9 @@ uint32_t rotl(uint32_t value, int shift) {
 std::string sha1::pad_message(const std::string& message) {
 	//Calculate pad
 	size_t l = message.length() * 8;	
-	int pad = 56 - (l / 8 + 1);
+	int pad = (56 - (l / 8 + 1)) % 64;
 	if(pad < 0) {
-		pad += 512;
+		pad += 64;
 	}
 
 	//Apply pad
@@ -117,10 +115,13 @@ std::string sha1::hash(const std::string &message) {
 			hash[i] += cur[i];
 	}
 
-	std::stringstream ss;
+	char outHash[20];
 	for(int i = 0 ; i < 5 ; i++) {
-		ss << std::hex << std::setfill('0') << std::setw(8) << hash[i];
+		outHash[i*4] = (hash[i] >> 24) & 0xff;
+		outHash[i*4 + 1] = (hash[i] >> 16) & 0xff;
+		outHash[i*4 + 2] = (hash[i] >> 8) & 0xff;
+		outHash[i*4 + 3] = hash[i] & 0xff;
 	}
-	return ss.str();
+	return std::string(outHash, 20);
 }
 

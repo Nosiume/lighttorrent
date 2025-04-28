@@ -1,5 +1,6 @@
 #include "Torrent.h"
 #include "Bencoding.h"
+#include "SHA1.h"
 #include <fstream>
 #include <iomanip>
 #include <sstream>
@@ -11,7 +12,7 @@ using namespace bparser;
 Torrent::Torrent(const std::string& path) {
 	std::ifstream in(path);
 	if(!in.good()) throw std::invalid_argument("Couldn't open torrent file.");
-	
+
 	std::stringstream ss;
 	ss << in.rdbuf();
 	std::string contents = ss.str();
@@ -32,15 +33,25 @@ Torrent::Torrent(const std::string& path) {
 	}
 
 	BDict info = root.at("info").asDict();
+	m_info_hash = sha1::hash(to_string(info));
 	if(info.contains("files")) {
 		// Multiple files mode
 		for(const BObject& file : info.at("files").asList()) {
 			BDict fileDict = file.asDict();
+			
+			std::string name;
+			if(fileDict.at("name").isString()) {
+				name = fileDict.at("name").asString();
+			} else {
+				for(const auto& part : fileDict.at("name").asList()) {
+					name += part.asString();
+				}
+			}
 
 			TorrentOutFile f = {
 				.checksum = fileDict.contains("md5sum") ? 
 					std::make_optional(fileDict.at("md5sum").asString()) : std::nullopt,
-				.path = fileDict.at("name").asString(),
+				.path = name,
 				.length = fileDict.at("length").asInteger()
 			};	
 			m_files.push_back(f);

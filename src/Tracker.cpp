@@ -91,7 +91,7 @@ TrackerResponse Tracker::query(const TrackerRequest& req) {
 			Peer p {
 				.id = peerInfo.at("peer id").asString(),
 				.ip = peerInfo.at("ip").asString(),
-				.port = (short) peerInfo.at("port").asInteger()
+				.port = (uint16_t) peerInfo.at("port").asInteger()
 			};
 			trackRes.peers.push_back(p);
 		}

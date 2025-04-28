@@ -30,7 +30,7 @@ struct TrackerRequest {
 struct Peer {
 	std::string id;
 	std::string ip;
-	short port;
+	uint16_t port;
 };
 
 struct TrackerResponse {

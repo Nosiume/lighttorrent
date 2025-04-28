@@ -78,6 +78,8 @@ namespace bparser {
 	BList read_blist(std::string::iterator* curr);
 	BDict read_bdict(std::string::iterator* curr);
 	BObject read_bobject(std::string::iterator* curr);
+
+	std::string to_string(const BObject& obj);
 }
 
 

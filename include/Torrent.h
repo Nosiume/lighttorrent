@@ -22,6 +22,7 @@ class Torrent {
 		std::vector<TorrentOutFile> m_files;
 		long long m_pieceLength;
 		std::string m_pieces;
+		std::string m_info_hash;
 
 
 	public:

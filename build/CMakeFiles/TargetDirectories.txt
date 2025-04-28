@@ -1,0 +1,3 @@
+/home/n0s/Documents/code/lighttorrent/build/CMakeFiles/lighttorrent.dir
+/home/n0s/Documents/code/lighttorrent/build/CMakeFiles/edit_cache.dir
+/home/n0s/Documents/code/lighttorrent/build/CMakeFiles/rebuild_cache.dir

@@ -1,4 +1,5 @@
 #include "Bencoding.h"
+#include <sstream>
 
 namespace bparser {
 	BObject parse(std::string& data) {
@@ -78,5 +79,32 @@ namespace bparser {
 			default:
 				return Unknown;
 		}
+	}
+
+	std::string to_string(const BObject& obj) {
+		std::stringstream out;
+		if(obj.isString()) {
+			BString s = obj.asString();
+			out << s.length() << ':' << s;
+		} else if (obj.isInteger()) {
+			BInteger n = obj.asInteger();
+			out << 'i' << n << 'e';
+		} else if (obj.isList()) {
+			BList l = obj.asList();
+			out << 'l';
+			for(const BObject& e : l) {
+				out << to_string(e);
+			}
+			out << 'e';
+		} else if (obj.isDict()) {
+			BDict d = obj.asDict();
+			out << 'd';
+			for(const auto& entry : d) {
+				out << to_string(entry.first);
+				out << to_string(entry.second);
+			}
+			out << 'e';
+		}
+		return out.str();
 	}
 }
